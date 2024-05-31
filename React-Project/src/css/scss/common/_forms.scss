@@ -1,0 +1,25 @@
+.single-input {
+    position: relative;
+    width: fit-content;
+    input {
+        border-radius: 8px;
+        border: solid 1px var(--color-gray-900);
+        padding: 8px;
+    }
+
+    button {
+        position: absolute;
+        border-radius: 100%;
+        border: solid 1px var(--color-green);
+        color: var(--color-green);
+        background-color: var(--color-white);
+        top: 7px;
+        right: 7px;
+        
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+    
+}

@@ -1,0 +1,106 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 16px;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+html, body, #root {
+    width: 100%;
+    height: 100%;
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+}
+
+body {
+    font-optical-sizing: auto;
+    font-family: "Cabin", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--color-gray-900);
+    background-color: var(--color-white);
+}
+
+.wrapper {
+    margin: 0 14px 14px 14px;
+    
+}
+
+.container {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+
+  
+
+    @include sm {
+        max-width: 540px;
+    }
+
+    @include md {
+        max-width: 720px;
+    }
+
+    @include lg {
+        max-width: 960px;
+    }
+
+    @include xl {
+        max-width: 1140px;
+    }
+
+    @include xxl {
+        max-width: 1320px;
+    }
+}
+
+:root {
+    --color-white: #ffffff;
+    --color-main: #111111;
+    --color-light-gray: #DBE3F5;
+    --color-text: #626262;
+    --color-accent: #F4303C;
+    --color-blue: #3B5999;
+    --color-light-blue: #55ACEE;
+    --color-red: #DD4B39;
+    --color-yellow: #FFBE00;
+    --color-green: #00b469;
+    --color-orange: #EF962D;
+    --color-sale: #69864D;
+    --color-new: #CFA93F;
+    --color-top: #864D7D;
+
+    --color-system-error: #EF4444;
+    --color-system-success: #22C55E;
+    --color-system-warning: #FFBA08;
+    --color-system-info: #4C82F7;
+    --color-danger: #F5D7DA;
+
+    --color-gray-100: #f6fff5;
+    --color-gray-200: #d6dfd5;
+    --color-gray-300: #98a197;
+    --color-gray-400: #828d81;
+    --color-gray-500: #717970;
+    --color-gray-600: #676d66;
+    --color-gray-700: #3b413a;
+    --color-gray-800: #232722;
+    --color-gray-900: #000000;
+
+    --color-gray-500-o: #b4b7c941;
+}
+
+@mixin shadow-theme {
+    box-shadow: 0 8px 18px -8px var(--color-theme-o);
+}
+
+@mixin shadow-secondary {
+    box-shadow: 0 8px 8px 8px var(--color-gray-500-o);
+}
