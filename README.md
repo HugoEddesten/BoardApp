@@ -7,3 +7,7 @@
 > - Delete textboxes
 > - Delete boards
 > - Save everything in an sql-database
+
+> ### Frameworks and languages
+> Frontend is written using React with Javascript.
+> Backend is written using Azure functions in .NET
