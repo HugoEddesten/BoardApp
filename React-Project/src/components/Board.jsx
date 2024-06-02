@@ -1,15 +1,42 @@
 import { useEffect, useRef, useState } from "react"
 
 
-const Board = ({ startX, startY, endX, endY, title}) => {
+const Board = ({ id, startX, startY, endX, endY, title, reloadHandler}) => {
     const board = useRef()
-    
+    const [titleValue, setTitleValue] = useState('')
+
+
     useEffect(() => {
         
     })
 
-    const submit = (e) => {
-        console.log(e)
+    const httpPutChanges = async () => {
+        try {
+            await fetch("http://localhost:7279/api/boards", {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    "id": id,
+                    "title": titleValue,
+                    "startX": startX,
+                    "startY": startY,
+                    "endX": endX,
+                    "endY": endY,
+                })
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const submitTitle = () => {
+        console.log(titleValue)
+        console.log(id)
+        httpPutChanges()
+        reloadHandler()
+
     }
 
 
@@ -26,8 +53,8 @@ const Board = ({ startX, startY, endX, endY, title}) => {
                 ? <h4 className="title">{title}</h4>  
                 : 
                     <div className="single-input">
-                        <input className="title-input" placeholder="Name your board!"/>
-                        <button>+</button>
+                        <input onChange={(e) => setTitleValue(e.target.value)} className="title-input" placeholder="Name your board!"/>
+                        <button onClick={submitTitle}>+</button>
                     </div>
                     
             }

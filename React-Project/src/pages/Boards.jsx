@@ -6,29 +6,64 @@ function Boards() {
 
     const [boards, setBoards] = useState([])
     const workspace = useRef()
-    const [board, setBoard] = useState({})
+    const [currentBoard, setCurrentBoard] = useState({})
     const [addState, setAddState] = useState(false);
     const [mouseDown, setMouseDown] = useState(false)
 
-    useEffect(() => {
-        if (addState) {
-            setMouseDown(true)
-        }
-        if (!addState && mouseDown && board.startX != undefined && board.startY != undefined && board.endX != undefined && board.endY != undefined) {
-            let boardObject = {startX: board.startX, startY: board.startY, endX: board.endX, endY: board.endY}
-            if (board.startX-board.endX < 50 || board.startY-board.endY < 50) {
-                setBoard({})
-                setAddState(false)  
-                setMouseDown(false) 
-            }
-            setBoards([...boards, boardObject])   
-            setBoard({})
-            setAddState(false)  
-            setMouseDown(false) 
-            
+    const reload = () => {
+        fetchData()
+    }
+
+    const addBoard = async (board) => {
+        try {
+            await fetch("http://localhost:7279/api/boards", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(board)
+            })
+        } catch (error) {
+            console.log(error)
         }
         
-    }, [board, boards])  
+    }
+
+    useEffect(() => {
+        fetchData()
+    }, [])
+
+
+    const fetchData = async () => {
+            
+        try {
+            
+            const fetchedBoards = await fetch("http://localhost:7279/api/boards").then((response) => response.json())
+            
+            setBoards(fetchedBoards)
+            console.log(fetchedBoards)
+        } catch (error) {
+            console.log(error)
+        }
+    } 
+
+    const handleMouseDown = (e) => {
+        setMouseDown(true)
+        setCurrentBoard({startX: e.clientX, startY: e.clientY})
+    }
+
+    const handleMouseMove = (e) => {
+        setCurrentBoard({startX: currentBoard.startX, startY: currentBoard.startY, endX: e.clientX, endY: e.clientY})
+    }
+
+    const handleMouseUp = async () => {
+        let boardObject = {startX: currentBoard.startX, startY: currentBoard.startY, endX: currentBoard.endX, endY: currentBoard.endY}
+        setCurrentBoard({})
+        setAddState(false)
+        setMouseDown(false)
+        await addBoard(boardObject)
+        reload()
+    }
 
     return (
         <section className='boards'>
@@ -36,14 +71,18 @@ function Boards() {
                 <Sidebar handleAddBoard={setAddState}/>
             </div>
             <div className='wrapper'>
-                <div className="workspace" ref={workspace} onMouseMove={mouseDown ? (e) => setBoard({startX: board.startX, startY: board.startY, endX: e.clientX, endY: e.clientY}) : console.log('mouseDown: false')} onMouseDown={(e) => addState ? setBoard({startX: e.clientX, startY: e.clientY}) : console.log('addState: false')} onMouseUp={() => addState ? setAddState(false) : console.log('addState: false')}>
+                <div className="workspace" ref={workspace} 
+                onMouseDown={(e) => addState ? handleMouseDown(e) : null} 
+                onMouseMove={mouseDown ? (e) => handleMouseMove(e): null} 
+                onMouseUp={() => addState ? handleMouseUp() : null}>
                     {boards.map((board, index) => {
+                        
                         return (
-                            <Board key={index} startX={board.startX} startY={board.startY} endX={board.endX} endY={board.endY} title={board.title}/>
+                            <Board key={index} id={board.id} startX={board.startX} startY={board.startY} endX={board.endX} endY={board.endY} title={board.title} reloadHandler={reload}/>
                         )
                     })}
                     {mouseDown 
-                    ? <Board key={board} startX={board.startX} startY={board.startY} endX={board.endX} endY={board.endY} /> 
+                    ? <Board key={currentBoard} startX={currentBoard.startX} startY={currentBoard.startY} endX={currentBoard.endX} endY={currentBoard.endY} reloadHandler={reload} /> 
                     : null
                     }
                     
