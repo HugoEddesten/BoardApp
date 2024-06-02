@@ -1,5 +1,5 @@
 # Personal Project
-### Board WebApp - Using Microservice-architecure
+### Board WebApp - Using Microservice-architecture
 
 > #### Project Goal
 > - Create resizable boards in the workspace by a dragging the mouse over a free area
