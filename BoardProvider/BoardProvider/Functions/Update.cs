@@ -22,7 +22,7 @@ namespace BoardProvider.Functions
 
         [Function("Update")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "put", Route = "boards")] HttpRequest req)
-        {
+        { 
             try
             {
                 _logger.LogInformation("C# HTTP trigger function processed a request.");

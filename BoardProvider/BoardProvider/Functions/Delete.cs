@@ -1,5 +1,6 @@
 using BoardProvider.Data.Contexts;
 using BoardProvider.Data.Entities;
+using BoardProvider.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -25,12 +26,13 @@ namespace BoardProvider.Functions
         {
             _logger.LogInformation("C# HTTP trigger function processed a request.");
 
-            string id = JsonConvert.DeserializeObject<string>(await new StreamReader(req.Body).ReadToEndAsync())!;
+            DeleteModel model = JsonConvert.DeserializeObject<DeleteModel>(await new StreamReader(req.Body).ReadToEndAsync())!;
 
-            BoardEntity board = await _context.Boards.FirstOrDefaultAsync(x => x.Id == id);
+            BoardEntity? board = await _context.Boards.FirstOrDefaultAsync(x => x.Id == model.Id);
             if (board != null)
             {
                 _context.Boards.Remove(board);
+                await _context.SaveChangesAsync();
                 return new NoContentResult();
             }
             return new BadRequestResult();

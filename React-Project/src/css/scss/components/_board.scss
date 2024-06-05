@@ -1,17 +1,75 @@
 .board {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    
     position: fixed;
     background-color: var(--color-white);
     border-radius: 12px;
     box-shadow: -2px 2px 0px 1px rgb(0, 119, 26);
-    padding: 8px;
     min-width: fit-content;
     min-height: fit-content;
 
-    .title {
+    
+    
+    .board-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        width: 100%;
+        background-color: var(--color-gray-200);
+        padding: 8px;
+        border-radius: inherit;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        box-shadow: -0.5px 0.5px 0px 1px rgb(0, 119, 26);
+        &:hover {
+            cursor: move;
+        }
 
+        .title {
+            padding: 8px 16px;
+            border: solid 1px var(--color-white);
+            transition: all 0.1s ease-in-out;
+            border-radius: 16px;
+            &:hover {
+                border: solid 1px var(--color-gray-600);
+                box-shadow: 0px 10px 8px 1px rgba(0, 0, 0, 0.178);
+                cursor: pointer;
+            }
+            
+        }
+    
+        .title-input {
+            
+        }
+    
+        .remove {
+            color: var(--color-white);
+            background-color: var(--color-red);
+            transition: all 0.1s ease-in-out;
+            &:hover {
+                
+                box-shadow: 0px 10px 8px 1px rgba(0, 0, 0, 0.178);
+                
+            }
+        }
     }
 
-    .title-input {
+    .board-content {
+        padding: 8px;
         
     }
+
+    .resize {
+        align-self: flex-end;
+        justify-self: flex-end;
+        background-color: var(--color-green);
+        height: 10px;
+        border-bottom-right-radius: 12px;
+        width: 10px
+    }
+    
+
 }

@@ -10,7 +10,7 @@ var host = new HostBuilder()
     {
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
-        services.AddDbContext<Context>(x => x.UseSqlServer("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=D:\\WebDevelopmentProjects\\ReactProject\\BoardProvider\\BoardProvider\\Data\\Database\\boardDB.mdf;Integrated Security=True;Connect Timeout=30"));
+        services.AddDbContext<Context>(x => x.UseSqlServer(Environment.GetEnvironmentVariable("ConnectionStrings:SQL")));
     })
     .Build();
 

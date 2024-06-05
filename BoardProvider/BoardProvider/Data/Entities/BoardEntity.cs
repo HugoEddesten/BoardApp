@@ -10,16 +10,16 @@ public class BoardEntity
     public string? Title { get; set; }
 
     [Required]
-    public int StartX { get; set; }
+    public int Y { get; set; }
 
     [Required]
-    public int StartY { get; set; }
+    public int X { get; set; }
 
     [Required]
-    public int EndX { get; set; }
+    public int Width { get; set; }
 
     [Required]
-    public int EndY { get; set; }
+    public int Height { get; set; }
 
     public string? Color { get; set; }
 
