@@ -20,7 +20,7 @@ namespace BoardProvider.Functions
             _logger = logger;
             _context = context;
         }
-
+    
         [Function("Delete")]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "delete", Route = "boards")] HttpRequest req)
         {

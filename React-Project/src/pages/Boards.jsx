@@ -2,87 +2,75 @@ import { useEffect, useRef, useState } from "react"
 import Sidebar from "../components/Sidebar"
 import Board from "../components/Board"
 import TempBoard from "../components/TempBoard"
+import useOrientation from "../hooks/useOrientation"
+import useHttp from "../hooks/useHttp"
+import SnappingLine from "../components/SnappingLine"
 
 function Boards() {
-
-    const [boards, setBoards] = useState([])
     const workspace = useRef()
-    const [currentBoard, setCurrentBoard] = useState({})
-    const [addState, setAddState] = useState(false)
+    const [addBoardState, setAddBoardState] = useState(false)
     const [mouseDown, setMouseDown] = useState(false)
+    
+    const boards = useOrientation({ workspace, snappingDistance: 15, minWidth: 300, minHeight: 300, snapping: true})
+    const tempBoard = useOrientation({ workspace, minCompletedWidth: 300, minCompletedHeight: 300, snapping: false})
+
+
+    const http = useHttp("http://localhost:7279/api/boards")
 
     const reload = () => {
-        fetchData()
-    }
+        fetchItems()
+    }   
 
-    const addBoard = async (board) => {
-        try {
-            await fetch("http://localhost:7279/api/boards", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(board)
-            })
-        } catch (error) {
-            console.log(error)
-        }
-        
+    const fetchItems = async () => {
+        const data = await http.GET(boards.setItems)
+        console.log(data)
     }
 
     useEffect(() => {
-        fetchData()
-    }, [])
+        fetchItems()
+    }, [])      
 
-
-    const fetchData = async () => {
-        try {
-            const fetchedBoards = await fetch("http://localhost:7279/api/boards").then((response) => response.json())
-            setBoards(fetchedBoards)
-            console.log(fetchedBoards)
-        } catch (error) {
-            console.log(error)
+    useEffect(() => {
+        if (boards.finishedItem != null) {
+            http.PUT(boards.finishedItem)
         }
-    } 
+    }, [boards.finishedItem])
 
-    const handleMouseDown = (e) => {
-        setMouseDown(true)
-        setCurrentBoard({'x': e.clientX, 'y': e.clientY})
-    }
-
-    const handleMouseMove = (e) => {
-        setCurrentBoard({...currentBoard, 'width': currentBoard.width - e.clientX, 'height': currentBoard - e.clientY})
-    }
-
-    const handleMouseUp = async () => {
-        let boardObject = {'x': currentBoard.x, 'y': currentBoard.y, 'width': currentBoard.width, 'height': currentBoard.height}
-        setCurrentBoard({})
-        setAddState(false)
-        setMouseDown(false)
-        await addBoard(boardObject)
-        reload()
-    }
 
     const startAddBoard = () => {
-        setAddState(true)
-    }
-    
-    const onMouseDown = (e) => {
-        
-        if (!workspace.current.contains(e.target)) {
-            setAddState(false)
-        }
+        setAddBoardState(true)
     }
 
     useEffect(() => {
-        if (addState) {
+        const handlefinishedItem = async () => {
+            if (tempBoard.finishedItem != null) {
+                setAddBoardState(false)
+                setMouseDown(false)
+                await http.POST(tempBoard.finishedItem)
+                reload()
+            }
+        }
+        handlefinishedItem()
+    }, [tempBoard.finishedItem])
+    
+    useEffect(() => {
+        if (addBoardState) {
             document.addEventListener('mousedown', onMouseDown)
             return () => {
                 document.removeEventListener('mousedown', onMouseDown)
             }
         }
-        
-    }, [addState])
+    }, [addBoardState])
+
+    const onMouseDown = (e) => {
+        if (!workspace.current.contains(e.target) || e.button == 2) {
+            setAddBoardState(false)
+            setMouseDown(false)
+        } else {
+            setMouseDown(true)
+            tempBoard.startResize(e, 0)
+        }
+    }
 
     return (
         <section className='boards'>
@@ -90,25 +78,27 @@ function Boards() {
                 <Sidebar handleAddBoard={startAddBoard}/>
             </div>
             <div className='wrapper'>
-                <div className={addState ? 'workspace active' : 'workspace'} ref={workspace} 
-                onMouseDown={(e) => addState ? handleMouseDown(e) : null} 
-                onMouseMove={mouseDown ? (e) => handleMouseMove(e): null} 
-                onMouseUp={() => addState ? handleMouseUp() : null}>
-                    {boards.map((board) => {
+                <div className={addBoardState ? 'workspace active' : 'workspace'} ref={workspace} 
+                    onMouseDown={addBoardState ? onMouseDown : null}>
+                    {boards.items.map((board) => {
                         return (
-                            <Board key={board.id} id={board.id} x={board.x} y={board.y} width={board.width} height={board.height} title={board.title} reloadHandler={reload} workspace={workspace}/>
+                            <Board key={board.id} board={{'id': board.id, 'title': board.title, 'textBoxes': board.textBoxes, 'x': board.x, 'y': board.y, 'width': board.width, 'height': board.height}} reloadHandler={reload} workspace={workspace} startDrag={boards.startDrag} startResize={boards.startResize} http={http}/>
                         )
                     })}
-                    {mouseDown 
-                    
-                    ? <TempBoard x={currentBoard.x} y={currentBoard.y} width={currentBoard.width} height={currentBoard.height}/> 
-                    : null
+                    {addBoardState && mouseDown
+                        ? <TempBoard x={tempBoard.currentItem.x} y={tempBoard.currentItem.y} width={tempBoard.currentItem.width} height={tempBoard.currentItem.height}/> 
+                        : null
                     }
-                    
-                       
-
-                    
-                    
+                    {boards.nearbySnappingLines.x.length > 0 ? boards.nearbySnappingLines.x.map((line, index) => {
+                        return (
+                            <SnappingLine key={index} workspace={workspace.current} x={line}/>
+                        )
+                    }) : null}
+                    {boards.nearbySnappingLines.y.length > 0 ? boards.nearbySnappingLines.y.map((line, index) => {
+                        return (
+                            <SnappingLine key={index} workspace={workspace.current} y={line}/>
+                        )
+                    }) : null}
                 </div>
             </div>  
         </section>

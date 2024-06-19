@@ -1,8 +1,5 @@
 
 const TempBoard = ({x, y, width, height}) => {
-
-
-
     return (
         <div className="temp-board" style={{
             top: y+'px',

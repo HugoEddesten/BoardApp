@@ -1,10 +1,12 @@
 .single-input {
     position: relative;
     width: fit-content;
+    
     input {
         border-radius: 8px;
         border: solid 1px var(--color-gray-900);
         padding: 8px;
+        max-width: 150px;
     }
 
     button {

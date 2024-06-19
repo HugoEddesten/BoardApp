@@ -1,24 +1,26 @@
 .board {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    
     align-items: flex-start;
     
     position: fixed;
     background-color: var(--color-white);
     border-radius: 12px;
     box-shadow: -2px 2px 0px 1px rgb(0, 119, 26);
-    min-width: fit-content;
-    min-height: fit-content;
 
+    user-select: none;
     
-    
+    &:active {
+        z-index: 1000;
+    }
+
     .board-header {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
         width: 100%;
-        background-color: var(--color-gray-200);
+        background-color: rgb(19, 155, 49);
         padding: 8px;
         border-radius: inherit;
         border-bottom-left-radius: 0;
@@ -29,13 +31,14 @@
         }
 
         .title {
-            padding: 8px 16px;
+            padding: 4px 16px;
+            min-width: 100px;
             border: solid 1px var(--color-white);
+            background-color: var(--color-white);
             transition: all 0.1s ease-in-out;
-            border-radius: 16px;
+            border-radius: 8px;
             &:hover {
                 border: solid 1px var(--color-gray-600);
-                box-shadow: 0px 10px 8px 1px rgba(0, 0, 0, 0.178);
                 cursor: pointer;
             }
             
@@ -63,12 +66,17 @@
     }
 
     .resize {
-        align-self: flex-end;
-        justify-self: flex-end;
+        position: absolute;
+        bottom: 0;
+        right: 0;
         background-color: var(--color-green);
         height: 10px;
         border-bottom-right-radius: 12px;
-        width: 10px
+        width: 10px;
+
+        &:hover {
+            cursor: se-resize;
+        }
     }
     
 

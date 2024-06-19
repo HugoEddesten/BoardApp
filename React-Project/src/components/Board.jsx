@@ -1,100 +1,76 @@
 import { useEffect, useRef, useState } from "react"
-import useBoardOrientation from '../hooks/useBoardOrientation'
+import TextBox from "./TextBox"
 
-const Board = ({ id, x, y, width, height, title, reloadHandler, workspace}) => {
+const Board = ({ board, reloadHandler, workspace, startDrag, startResize, http}) => {
     const boardRef = useRef()
-    const [titleValue, setTitleValue] = useState(title)
-    const {boardOrientation, setBoardOrientation, startDrag, startResize} = useBoardOrientation({id, title, x, y, width, height, workspace})
-    const [board, setBoard] = useState({'id': id, 'title': title})
-    //const [moving, setMoving] = useState({'active': false, 'initX': null, 'initY': null, 'prevX': null, 'prevY': null})
-    
-    const httpPutChanges = async () => {
-        try {
-            await fetch("http://localhost:7279/api/boards", {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    "id": id,
-                    "title": titleValue, // Ändra backend så att den inte updateraar alla utan bara de som inte är null
-                    "x": boardOrientation.x,
-                    "y": boardOrientation.y,
-                    "width": boardOrientation.width,
-                    "height": boardOrientation.height,
-                })
-            })
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    const [titleValue, setTitleValue] = useState(board.title) 
+    const [editState, setEditState] = useState(false)
+    const titleRef = useRef()
+
+    useEffect(() => {
+        if (editState) {
+            document.addEventListener('mousedown', toggleEditState)
+            return () => {
+                document.removeEventListener('mousedown', toggleEditState)
+                
+            }
+        }   
+    }, [editState])
+
 
     const submitTitle = async () => {
-        await httpPutChanges()
+        await http.PUT({...board, 'title': titleValue})
+        setEditState(false) 
         reloadHandler()
-    }
+    }   
 
     const deleteBoard = async() => {
-        try {
-            await fetch('http://localhost:7279/api/boards', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    id
-                })
-            })
-        } catch (error) {
-            console.log(error)
-        }
+        await http.DELETE({'id': board.id})
         reloadHandler()
     }
-    /*
-    const moveMouseDown = (e) => {
-        setMoving({'active': true, 'initX': e.clientX, 'initY': e.clientY, 'prevX': e.clientX, 'prevY': e.clientY})
-    }
 
-    const moveMouseMoving = (e) => {
-        setBoard({...board, 'x': board.x + e.clientX - moving.prevX, 'y': board.y + e.clientY - moving.prevY})
-        setMoving({...moving, 'prevX': e.clientX, 'prevY': e.clientY})
-    }
-
-    const moveMouseUp = async (e) => {
-        setMoving({...moving, active: false})
-        if (moving.initX == e.clientX && moving.initY == e.clientY) {
+    const toggleEditState = (e) => {
+        if (!titleRef.current.contains(e.target)) {
+            setEditState(!editState)    
             return
         }
-        await httpPutChanges()
-        reloadHandler()
-        
-        
+        setEditState(true)
     }
-    */
+
     return (
         
         <div className="board" ref={boardRef} style={{
-            top: boardOrientation.y+'px',
-            left: boardOrientation.x+'px', 
-            height: boardOrientation.height+'px',
-            width: boardOrientation.width+'px'
+            top: board.y+'px',
+            left: board.x+'px', 
+            height: board.height+'px',
+            width: board.width+'px'
             }}>
             
-            <div className="board-header" onMouseDown={startDrag}> {/* onMouseMove={moving.active ? (e) => moveMouseMoving(e) : null} onMouseUp={moving.active ? (e) => moveMouseUp(e) : null}> */}
+            <div className="board-header" onMouseDown={(e) => startDrag(e, board.id)}> 
+                <div ref={titleRef}>
                 {
-                    title != null
+                    board.title != null && !editState 
                     ?
-                        <h4 className="title">{title}</h4>
-                    :
+                        <h6 className="title" onClick={(e) => toggleEditState(e)}>{board.title == "" ? "Name me" : board.title}</h6>
+                    :   
                         <div className="single-input">
-                            <input onChange={(e) => setTitleValue(e.target.value)} className="title-input" placeholder="Name your board!"/>
-                            <button onClick={submitTitle}>+</button>
-                        </div>
+                            <input onChange={(e) => setTitleValue(e.target.value)} className="title-input" placeholder="Title" value={titleValue == null ? "" : titleValue}/>
+                            <button onClick={() => submitTitle()}>+</button>
+                        </div>  
                 }
+                </div>
+                
                 <button className="btn remove" onClick={deleteBoard}>Remove</button>
             </div>
-            
-            <div className="resize" onMouseDown={startResize}></div>
+            <div className="board-content">
+                {board.textBoxes.map((textBox) => {
+                    return (
+                        <TextBox key={textBox.id} text={textBox.text}/>
+                    )
+                })}
+            </div>
+
+            <div className="resize" onMouseDown={(e) => startResize(e, board.id)}></div>
         </div>
     )
 }

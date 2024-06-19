@@ -10,16 +10,16 @@ public class BoardEntity
     public string? Title { get; set; }
 
     [Required]
-    public int Y { get; set; }
+    public decimal Y { get; set; }
 
     [Required]
-    public int X { get; set; }
+    public decimal X { get; set; }
 
     [Required]
-    public int Width { get; set; }
+    public decimal Width { get; set; }
 
     [Required]
-    public int Height { get; set; }
+    public decimal Height { get; set; }
 
     public string? Color { get; set; }
 
