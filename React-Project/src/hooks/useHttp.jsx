@@ -27,8 +27,6 @@ const useHttp = (url) => {
         } catch (error) {
             console.log(error)
         }
-        
-        
     }
 
     const PUT = async (data) => {

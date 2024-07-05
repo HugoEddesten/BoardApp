@@ -94,6 +94,7 @@ function Boards() {
                             <SnappingLine key={index} workspace={workspace.current} x={line}/>
                         )
                     }) : null}
+                
                     {boards.nearbySnappingLines.y.length > 0 ? boards.nearbySnappingLines.y.map((line, index) => {
                         return (
                             <SnappingLine key={index} workspace={workspace.current} y={line}/>
