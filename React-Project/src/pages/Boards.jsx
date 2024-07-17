@@ -11,7 +11,7 @@ function Boards() {
     const [addBoardState, setAddBoardState] = useState(false)
     const [mouseDown, setMouseDown] = useState(false)
     
-    const boards = useOrientation({ workspace, snappingDistance: 15, minWidth: 300, minHeight: 300, snapping: true})
+    const boards = useOrientation({ workspace, snappingDistance: 50, minWidth: 300, minHeight: 300, snapping: true})
     const tempBoard = useOrientation({ workspace, minCompletedWidth: 300, minCompletedHeight: 300, snapping: false})
 
 

@@ -145,16 +145,20 @@ const useOrientation = ({workspace, snappingDistance = 20, minWidth = 0, maxWidt
     
             if (activeHorizontalSnappingLine != null) {
                 if (Math.abs(newBoardX - activeHorizontalSnappingLine) < snappingDistance) {
-                    updatedOrientation.x = activeHorizontalSnappingLine;
+                    updatedOrientation.x = activeHorizontalSnappingLine
+
                 } else if (Math.abs(newBoardX + updatedOrientation.width / 2 - activeHorizontalSnappingLine) < snappingDistance) {
-                    updatedOrientation.x = activeHorizontalSnappingLine - updatedOrientation.width / 2;
+                    updatedOrientation.x = activeHorizontalSnappingLine - updatedOrientation.width / 2
+
                 } else if (Math.abs(newBoardX + updatedOrientation.width - activeHorizontalSnappingLine) < snappingDistance) {
-                    updatedOrientation.x = activeHorizontalSnappingLine - updatedOrientation.width;
+                    updatedOrientation.x = activeHorizontalSnappingLine - updatedOrientation.width
+
                 }
             } else {
                 updatedOrientation.x = newBoardX
                 updatedMouseData.prevX = e.clientX
             }   
+            
         }
 
         if (withinVerticalBounds) {
